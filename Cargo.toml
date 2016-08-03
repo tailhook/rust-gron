@@ -1,0 +1,23 @@
+[package]
+name = "gron"
+description = """
+    Gron transforms JSON into discrete assignments to make it easier to grep
+"""
+license = "MIT"
+readme = "README.rst"
+keywords = ["gron", "json"]
+homepage = "http://github.com/tailhook/gron"
+documentation = "http://tailhook.github.com/gron/"
+version = "0.1.0"
+authors = ["paul@colomiets.name"]
+
+[dependencies]
+rustc-serialize = "0.3.19"
+
+[features]
+log_errors = []
+
+[lib]
+name = "gron"
+path = "src/lib.rs"
+
