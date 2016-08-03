@@ -26,7 +26,7 @@ enum StackItem<'a> {
 /// #
 /// # fn main() {
 /// let json = Json::from_str(r#"{"x": [1,2]}"#).unwrap();
-/// json_to_gron(&mut stdout(), "val", &json)
+/// json_to_gron(&mut stdout(), "val", &json);
 /// // Outputs to stdout:
 /// //
 /// //   val = {}
