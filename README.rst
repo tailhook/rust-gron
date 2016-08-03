@@ -3,7 +3,7 @@ Rust-Gron
 =========
 
 :Credits: gron_
-:API Documentation: http://tailhook.github.io/gron/
+:API Documentation: http://tailhook.github.io/rust-gron/
 :Format Description: `in gron docs`__
 
 __ https://github.com/tomnomnom/gron/blob/master/README.mkd
