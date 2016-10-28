@@ -6,7 +6,7 @@
 //! * [Original gron](https://github.com/tomnomnom/gron)
 //! * [Documentation](https://tailhook.github.io/gron/gron/index.html)
 
-extern crate rustc_serialize;
+extern crate serde_json;
 
 mod json_struct;
 
