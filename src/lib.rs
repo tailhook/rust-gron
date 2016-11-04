@@ -12,4 +12,3 @@ extern crate serde_json;
 mod json_struct;
 
 pub use json_struct::json_to_gron;
-pub use json_struct::serde_json_to_gron;
