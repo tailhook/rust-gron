@@ -1,0 +1,170 @@
+use std::io::{self, Write};
+use std::iter::Enumerate;
+use std::collections::btree_map::Iter as MapIter;
+use std::slice::Iter as VecIter;
+
+use serde_json::value::Value;
+
+use super::ToGron;
+
+enum StackItem<'a> {
+    MapIter(MapIter<'a, String, Value>),
+    VecIter(Enumerate<VecIter<'a, Value>>),
+}
+
+
+impl ToGron for Value {
+    /// Converts JSON structure from `serde::value::Value` into gron format
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate gron;
+    /// # extern crate serde_json;
+    /// #
+    /// # use std::io::stdout;
+    /// # use serde_json::value::Value;
+    /// # use serde_json::de;
+    /// # use gron::ToGron;
+    /// #
+    /// # fn main() {
+    /// let json: Value = de::from_str(r#"{"x": [1,2]}"#).unwrap();
+    /// json.to_gron(&mut stdout(), "val");
+    /// // Outputs to stdout:
+    /// //
+    /// //   val = {}
+    /// //   val.x = []
+    /// //   val.x[0] = 1
+    /// //   val.x[1] = 2
+    /// # }
+    ///
+    /// ```
+    fn to_gron<W: Write>(&self, out: &mut W, prefix: &str)
+        -> io::Result<()>
+    {
+        use self::StackItem::*;
+
+        let mut stack = Vec::with_capacity(8);
+        let mut namebuf = String::with_capacity(100);
+        namebuf.push_str(prefix);
+        match *self {
+            Value::I64(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
+            Value::U64(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
+            Value::F64(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
+            Value::String(ref value) => {
+                try!(writeln!(out, "{} = {:?}", namebuf, value));
+            }
+            Value::Bool(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
+            Value::Array(ref vec) => {
+                try!(writeln!(out, "{} = []", namebuf));
+                stack.push((VecIter(vec.iter().enumerate()), namebuf.len()));
+            }
+            Value::Object(ref keys) => {
+                try!(writeln!(out, "{} = {{}}", namebuf));
+                stack.push((MapIter(keys.iter()), namebuf.len()));
+            }
+            Value::Null => try!(writeln!(out, "{} = null", namebuf)),
+        }
+        while stack.len() > 0 {
+            let (kind, off) = stack.pop().unwrap();
+            namebuf.truncate(off);
+            match kind {
+                MapIter(mut iter) => {
+                    let (key, json) = match iter.next() {
+                        Some((key, json)) => (key, json),
+                        None => continue,
+                    };
+                    stack.push((MapIter(iter), off));
+                    match *json {
+                        Value::I64(value) => {
+                            try!(writeln!(out, "{}.{} = {}",
+                                namebuf, key, value));
+                        }
+                        Value::U64(value) => {
+                            try!(writeln!(out, "{}.{} = {}",
+                                namebuf, key, value));
+                        }
+                        Value::F64(value) => {
+                            try!(writeln!(out, "{}.{} = {}",
+                                namebuf, key, value));
+                        }
+                        Value::String(ref value) => {
+                            try!(writeln!(out, "{}.{} = {:?}",
+                                namebuf, key, value));
+                        }
+                        Value::Bool(value) => {
+                            try!(writeln!(out, "{}.{} = {}",
+                                namebuf, key, value));
+                        }
+                        Value::Null => {
+                            try!(writeln!(out, "{}.{} = null",
+                                namebuf, key));
+                        }
+                        Value::Array(ref vec) => {
+                            namebuf.push('.');
+                            namebuf.push_str(key);
+                            try!(writeln!(out, "{} = []", namebuf));
+                            stack.push((
+                                VecIter(vec.iter().enumerate()),
+                                namebuf.len()));
+                        }
+                        Value::Object(ref keys) => {
+                            namebuf.push('.');
+                            namebuf.push_str(key);
+                            try!(writeln!(out, "{} = {{}}", namebuf));
+                            stack.push((MapIter(keys.iter()), namebuf.len()));
+                        }
+                    }
+                }
+                VecIter(mut iter) => {
+                    let (index, json) = match iter.next() {
+                        Some((index, json)) => (index, json),
+                        None => continue,
+                    };
+                    stack.push((VecIter(iter), off));
+                    match *json {
+                        Value::I64(value) => {
+                            try!(writeln!(out, "{}[{}] = {}",
+                                namebuf, index, value));
+                        }
+                        Value::U64(value) => {
+                            try!(writeln!(out, "{}[{}] = {}",
+                                namebuf, index, value));
+                        }
+                        Value::F64(value) => {
+                            try!(writeln!(out, "{}[{}] = {}",
+                                namebuf, index, value));
+                        }
+                        Value::String(ref value) => {
+                            try!(writeln!(out, "{}[{}] = {:?}",
+                                namebuf, index, value));
+                        }
+                        Value::Bool(value) => {
+                            try!(writeln!(out, "{}[{}] = {}",
+                                namebuf, index, value));
+                        }
+                        Value::Null => {
+                            try!(writeln!(out, "{}[{}] = null",
+                                namebuf, index));
+                        }
+                        Value::Array(ref vec) => {
+                            use std::fmt::Write;
+                            write!(&mut namebuf, "[{}]", index).unwrap();
+                            try!(writeln!(out, "{} = []", namebuf));
+                            stack.push((
+                                VecIter(vec.iter().enumerate()),
+                                namebuf.len()));
+                        }
+                        Value::Object(ref keys) => {
+                            use std::fmt::Write;
+                            write!(&mut namebuf, "[{}]", index).unwrap();
+                            try!(writeln!(out, "{} = {{}}", namebuf));
+                            stack.push((MapIter(keys.iter()), namebuf.len()));
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+}
