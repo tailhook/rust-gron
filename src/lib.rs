@@ -14,14 +14,41 @@ pub mod for_serde;
 
 use std::io::{self, Write};
 
-//pub use for_rustc_serialize::json_to_gron as rustc_serialize_json_to_gron;
-//pub use for_serde::json_to_gron as serde_json_to_gron;
 
-
+/// An interface to gronify of json like data types
 pub trait ToGron {
+    /// Write gron style representation of `self` to `out` with `prefix` in front of.
+    ///
+    /// Returns `()` when write to `out` was successful.
     fn to_gron<W: Write>(&self, out: &mut W, prefix: &str) -> io::Result<()>;
 }
 
+/// Convenient function to fill `out` with a gron style presentation of a `json` like data
+/// structure with a `prefix` in front of.
+///
+/// # Example
+///
+/// ```
+/// extern crate gron;
+/// extern crate serde_json;
+///
+/// use std::io::stdout;
+/// use serde_json::value::Value;
+/// use serde_json::de;
+/// use gron::json_to_gron;
+///
+/// # fn main() {
+/// let json: Value = de::from_str(r#"{"x": [1,2]}"#).unwrap();
+/// json_to_gron(&mut stdout(), "val", &json);
+/// // Outputs to stdout:
+/// //
+/// //   val = {}
+/// //   val.x = []
+/// //   val.x[0] = 1
+/// //   val.x[1] = 2
+/// # }
+///
+/// ```
 pub fn json_to_gron<W: Write, T: ToGron>(out: &mut W, prefix: &str, json: &T)
     -> io::Result<()>
 {

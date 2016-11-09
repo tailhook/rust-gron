@@ -14,31 +14,6 @@ enum StackItem<'a> {
 
 
 impl ToGron for Value {
-    /// Converts JSON structure from `serde::value::Value` into gron format
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate gron;
-    /// # extern crate serde_json;
-    /// #
-    /// # use std::io::stdout;
-    /// # use serde_json::value::Value;
-    /// # use serde_json::de;
-    /// # use gron::ToGron;
-    /// #
-    /// # fn main() {
-    /// let json: Value = de::from_str(r#"{"x": [1,2]}"#).unwrap();
-    /// json.to_gron(&mut stdout(), "val");
-    /// // Outputs to stdout:
-    /// //
-    /// //   val = {}
-    /// //   val.x = []
-    /// //   val.x[0] = 1
-    /// //   val.x[1] = 2
-    /// # }
-    ///
-    /// ```
     fn to_gron<W: Write>(&self, out: &mut W, prefix: &str)
         -> io::Result<()>
     {

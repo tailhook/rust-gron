@@ -15,30 +15,6 @@ enum StackItem<'a> {
 
 
 impl ToGron for Json {
-    /// Converts JSON structure from `rustc_serialize::json::Json` into gron format
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate gron;
-    /// # extern crate rustc_serialize;
-    /// #
-    /// # use std::io::stdout;
-    /// # use rustc_serialize::json::Json;
-    /// # use gron::ToGron;
-    /// #
-    /// # fn main() {
-    /// let json = Json::from_str(r#"{"x": [1,2]}"#).unwrap();
-    /// json.to_gron(&mut stdout(), "val");
-    /// // Outputs to stdout:
-    /// //
-    /// //   val = {}
-    /// //   val.x = []
-    /// //   val.x[0] = 1
-    /// //   val.x[1] = 2
-    /// # }
-    ///
-    /// ```
     fn to_gron<W: Write>(&self, out: &mut W, prefix: &str)
         -> io::Result<()>
     {
