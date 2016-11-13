@@ -4,7 +4,7 @@
 //! it can be easily evaluated with javascript interpreter.
 //!
 //! * [Original gron](https://github.com/tomnomnom/gron)
-//! * [Documentation](https://tailhook.github.io/gron/gron/index.html)
+//! * [Documentation](https://tailhook.github.io/rust-gron/)
 
 extern crate rustc_serialize;
 extern crate serde_json;
