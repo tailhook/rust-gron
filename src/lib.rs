@@ -5,26 +5,32 @@
 //!
 //! * [Original gron](https://github.com/tomnomnom/gron)
 //! * [Documentation](https://tailhook.github.io/rust-gron/)
+#![warn(missing_docs)]
 
 extern crate rustc_serialize;
 extern crate serde_json;
 
-pub mod for_rustc_serialize;
-pub mod for_serde;
+mod for_rustc_serialize;
+mod for_serde;
 
 use std::io::{self, Write};
 
 
-/// An interface to gronify of json like data types
+/// An (internal) interface to gronify of json like data types
+///
+/// You probably should not implement it yourself, it's here just to unify
+/// serde and rustc_serialize json structure.
 pub trait ToGron {
-    /// Write gron style representation of `self` to `out` with `prefix` in front of.
+    /// Write gron style representation of `self` to `out` with `prefix` in
+    /// front of.
     ///
     /// Returns `()` when write to `out` was successful.
     fn to_gron<W: Write>(&self, out: &mut W, prefix: &str) -> io::Result<()>;
 }
 
-/// Convenient function to fill `out` with a gron style presentation of a `json` like data
-/// structure with a `prefix` in front of.
+/// Converts JSON structure from into gron format.
+///
+/// It works both on `serde_json::Value` and on `rustc_serialize::json::Json`
 ///
 /// # Example
 ///
