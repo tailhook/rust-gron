@@ -1,5 +1,5 @@
 [package]
-name = "rust-gron"
+name = "gron"
 description = """
     Gron transforms JSON into discrete assignments to make it easier to grep
 """
