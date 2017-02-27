@@ -13,7 +13,7 @@ authors = ["paul@colomiets.name"]
 
 [dependencies]
 rustc-serialize = "0.3.19"
-serde_json = "0.8.2"
+serde_json = "0.9"
 
 [features]
 log_errors = []

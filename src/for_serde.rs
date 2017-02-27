@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 use std::iter::Enumerate;
-use std::collections::btree_map::Iter as MapIter;
+use serde_json::map::Iter as MapIter;
 use std::slice::Iter as VecIter;
 
 use serde_json::value::Value;
@@ -8,7 +8,7 @@ use serde_json::value::Value;
 use super::ToGron;
 
 enum StackItem<'a> {
-    MapIter(MapIter<'a, String, Value>),
+    MapIter(MapIter<'a>),
     VecIter(Enumerate<VecIter<'a, Value>>),
 }
 
@@ -23,9 +23,7 @@ impl ToGron for Value {
         let mut namebuf = String::with_capacity(100);
         namebuf.push_str(prefix);
         match *self {
-            Value::I64(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
-            Value::U64(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
-            Value::F64(value) => try!(writeln!(out, "{} = {}", namebuf, value)),
+            Value::Number(ref value) => try!(writeln!(out, "{} = {}", namebuf, value)),
             Value::String(ref value) => {
                 try!(writeln!(out, "{} = {:?}", namebuf, value));
             }
@@ -51,15 +49,7 @@ impl ToGron for Value {
                     };
                     stack.push((MapIter(iter), off));
                     match *json {
-                        Value::I64(value) => {
-                            try!(writeln!(out, "{}.{} = {}",
-                                namebuf, key, value));
-                        }
-                        Value::U64(value) => {
-                            try!(writeln!(out, "{}.{} = {}",
-                                namebuf, key, value));
-                        }
-                        Value::F64(value) => {
+                        Value::Number(ref value) => {
                             try!(writeln!(out, "{}.{} = {}",
                                 namebuf, key, value));
                         }
@@ -98,15 +88,7 @@ impl ToGron for Value {
                     };
                     stack.push((VecIter(iter), off));
                     match *json {
-                        Value::I64(value) => {
-                            try!(writeln!(out, "{}[{}] = {}",
-                                namebuf, index, value));
-                        }
-                        Value::U64(value) => {
-                            try!(writeln!(out, "{}[{}] = {}",
-                                namebuf, index, value));
-                        }
-                        Value::F64(value) => {
+                        Value::Number(ref value) => {
                             try!(writeln!(out, "{}[{}] = {}",
                                 namebuf, index, value));
                         }
