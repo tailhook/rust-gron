@@ -8,7 +8,7 @@ readme = "README.rst"
 keywords = ["gron", "json"]
 homepage = "http://github.com/tailhook/rust-gron"
 documentation = "http://tailhook.github.com/rust-gron/"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["paul@colomiets.name"]
 
 [dependencies]
