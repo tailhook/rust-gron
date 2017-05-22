@@ -8,12 +8,12 @@ readme = "README.rst"
 keywords = ["gron", "json"]
 homepage = "http://github.com/tailhook/rust-gron"
 documentation = "http://tailhook.github.com/rust-gron/"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["paul@colomiets.name"]
 
 [dependencies]
 rustc-serialize = "0.3.19"
-serde_json = "0.9"
+serde_json = "1.0.0"
 
 [features]
 log_errors = []
